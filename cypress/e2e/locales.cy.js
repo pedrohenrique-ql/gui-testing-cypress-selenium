@@ -5,26 +5,87 @@ describe('locales', () => {
     cy.get('[id="_password"]').type('sylius');
     cy.get('.primary').click();
   });
-  // Remove .only and implement others test cases!
-  it.only('validate filters bar with contains value', () => {
-    // Click in locales in side menu
+
+  it('validate filters bar with contains value', () => {
     cy.clickInFirst('a[href="/admin/locales/"]');
-    // Type in value input to search for specify locale
+
     cy.get('[id="criteria_code_value"]').type('en');
-    // Click in filter blue button
+
     cy.get('*[class^="ui blue labeled icon button"]').click();
-    // Click in edit of the last locale
+
     cy.get('*[class^="ui labeled icon button "]').last().click();
 
-    // Assert that locale is English (United States)
     cy.get('body').should('contain', 'English (United States)');
   });
-  it('test case 2', () => {
-    // Implement your test case 2 code here
-  });
-  it('test case 3', () => {
-    // Implement your test case 3 code here
+
+  it('should create a new locale', () => {
+    cy.clickInFirst('a[href="/admin/locales/"]');
+
+    cy.get('*[class^="ui right floated buttons"]').click();
+
+    cy.get('*[id="sylius_locale_code"]').select('ak');
+
+    cy.get('button.ui.labeled.icon.primary.button').click();
+
+    cy.get('body').should('contain', 'ak Akan');
   });
 
-  // Implement the remaining test cases in a similar manner
+  it('should filter locales with equal constraint', () => {
+    cy.clickInFirst('a[href="/admin/locales/"]');
+
+    cy.get('*[id="criteria_code_type"]').select('equal');
+
+    cy.get('*[id="criteria_code_value"]').type('de_DE');
+
+    cy.findByRole('button', { name: 'Filter' }).click();
+
+    cy.findByText('English (United States)').should('not.exist');
+    cy.get('body').should('contain', 'de_DE German (Germany)');
+  });
+
+  it('should clear filters', () => {
+    cy.clickInFirst('a[href="/admin/locales/"]');
+
+    cy.get('*[id="criteria_code_type"]').select('equal');
+
+    cy.get('*[id="criteria_code_value"]').type('de_DE');
+
+    cy.findByRole('button', { name: 'Filter' }).click();
+
+    cy.findByText('English (United States)').should('not.exist');
+
+    cy.findByRole('link', { name: /Clear filters/i }).click();
+
+    cy.get('body').should('contain', 'English (United States)');
+  });
+
+  it('should clear filters', () => {
+    cy.clickInFirst('a[href="/admin/locales/"]');
+
+    cy.get('*[id="criteria_code_type"]').select('equal');
+
+    cy.get('*[id="criteria_code_value"]').type('de_DE');
+
+    cy.findByRole('button', { name: 'Filter' }).click();
+
+    cy.findByText('English (United States)').should('not.exist');
+
+    cy.findByRole('link', { name: /Clear filters/i }).click();
+
+    cy.get('body').should('contain', 'English (United States)');
+  });
+
+  it.only('should edit a locale', () => {
+    cy.clickInFirst('a[href="/admin/locales/"]');
+
+    cy.scrollTo('bottom');
+
+    cy.get('*[class^="ui labeled icon button "]').last().click();
+
+    cy.findByRole('option', 'Chinese (China)').should('exist');
+
+    cy.findByRole('button', { name: 'Save changes' }).click();
+
+    cy.get('body').should('contain', 'zh_CN Chinese (China)');
+  });
 });
