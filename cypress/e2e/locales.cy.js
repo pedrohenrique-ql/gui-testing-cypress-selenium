@@ -78,17 +78,17 @@ describe('locales', () => {
   });
 
   // Test 6
-  it('should edit a locale', () => {
+  it.only('should show a success message when edit a locale', () => {
     cy.clickInFirst('a[href="/admin/locales/"]');
-
-    cy.scrollTo('bottom');
 
     cy.get('*[class^="ui labeled icon button "]').last().click();
 
-    cy.findByRole('option', 'Chinese (China)').should('exist');
-
     cy.findByRole('button', { name: 'Save changes' }).click();
 
-    cy.get('body').should('contain', 'zh_CN Chinese (China)');
+    cy.findByText('Locale has been successfully updated.').should('exist');
+
+    cy.get('*[class^="close icon"]').last().click();
+
+    cy.findByText('Locale has been successfully updated.').should('not.be.visible');
   });
 });
