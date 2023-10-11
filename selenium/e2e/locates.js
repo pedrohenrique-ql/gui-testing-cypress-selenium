@@ -43,7 +43,7 @@ describe('locales', () => {
   });
 
   // Test 2
-  it.only('should create a new locale', async () => {
+  it('should create a new locale', async () => {
     await driver.findElement(By.linkText('Locales')).click();
 
     await driver.findElement(By.css('*[class^="ui right floated buttons"]')).click();
@@ -109,21 +109,92 @@ describe('locales', () => {
   });
 
   // Test 6
-  // it.only('should show a success message when edit a locale', async () => {
-  //   await driver.findElement(By.css('a[href="/admin/locales/"]')).click();
+  it('should show a success message when edit a locale', async () => {
+    await driver.findElement(By.css('a[href="/admin/locales/"]')).click();
 
-  //   const buttons = await driver.findElements(By.css('*[class^="ui labeled icon button "]'));
-  //   await buttons[buttons.length - 1].click();
+    const buttons = await driver.findElements(By.css('*[class^="ui labeled icon button "]'));
+    await buttons[buttons.length - 1].click();
 
-  //   await driver.findElement(By.css('*[id="sylius_save_changes_button"]')).click();
+    await driver.findElement(By.css('*[id="sylius_save_changes_button"]')).click();
 
-  //   let bodyText = await driver.findElement(By.tagName('body')).getText();
-  //   assert(bodyText.includes('Locale has been successfully updated.'));
+    let bodyText = await driver.findElement(By.tagName('body')).getText();
+    assert(bodyText.includes('Locale has been successfully updated.'));
+  });
 
-  //   let successMessageDiv = await driver.findElement(By.css('*[class^="ui icon positive message sylius-flash-message"]'));
-  //   await successMessageDiv.findElement(By.css('*[class^="close icon"]')).click();
+  // Test 7
+  it('should order by Name in descending order after filter with starts_with', async () => {
+    await driver.findElement(By.css('a[href="/admin/locales/"]')).click();
+    
+    await driver.findElement(By.css('*[class^="icon remove"]')).click();
 
-  //   successMessageDiv = await driver.findElement(By.css('*[class^="ui icon positive message sylius-flash-message transition hidden"]'));
-  //   assert.strictEqual(successMessageDiv.length, 1);
-  // });
+    const criteriaCodeType = await driver.findElement(By.id('criteria_code_type'));
+    await criteriaCodeType.findElement(By.css('option[value="starts_with"]')).click();
+
+    await driver.findElement(By.id('criteria_code_value')).sendKeys('e');
+
+    await driver.findElement(By.css('*[class^="ui blue labeled icon button"]')).click();
+
+    let nameColumnHeader = await driver.findElement(By.css('*[class^="sortable sylius-table-column-name"]'));
+    await nameColumnHeader.click();
+    nameColumnHeader = await driver.findElement(By.css('*[class^="sortable sorted ascending sylius-table-column-name"]'));
+    await nameColumnHeader.click();
+
+    const firstRowText = await driver.findElement(By.css('tbody tr.item:first-child td:nth-child(2)')).getText();
+    assert(firstRowText.includes('es_MX Spanish (Mexico)'));
+  });
+
+  // Test 8
+  it('should order by Name in descending order after filter with not contains', async () => {
+    await driver.findElement(By.css('a[href="/admin/locales/"]')).click();
+    
+    await driver.findElement(By.css('*[class^="icon remove"]')).click();
+
+    const criteriaCodeType = await driver.findElement(By.id('criteria_code_type'));
+    await criteriaCodeType.findElement(By.css('option[value="not_contains"]')).click();
+
+    await driver.findElement(By.id('criteria_code_value')).sendKeys('e');
+
+    await driver.findElement(By.css('*[class^="ui blue labeled icon button"]')).click();
+
+    let nameColumnHeader = await driver.findElement(By.css('*[class^="sortable sylius-table-column-name"]'));
+    await nameColumnHeader.click();
+    nameColumnHeader = await driver.findElement(By.css('*[class^="sortable sorted ascending sylius-table-column-name"]'));
+    await nameColumnHeader.click();
+
+    const firstRowText = await driver.findElement(By.css('tbody tr.item:first-child td:nth-child(2)')).getText();
+    assert(firstRowText.includes('zh_CN Chinese (China)'));
+  });
+
+
+  // Test 9
+  it('should filter locales by starts with filter', async () => {
+    await driver.findElement(By.css('a[href="/admin/locales/"]')).click();
+
+    const criteriaCodeType = await driver.findElement(By.id('criteria_code_type'));
+    await criteriaCodeType.findElement(By.css('option[value="starts_with"]')).click();
+
+    await driver.findElement(By.id('criteria_code_value')).sendKeys('e');
+
+    await driver.findElement(By.css('*[class^="ui blue labeled icon button"]')).click();
+
+    const bodyText = await driver.findElement(By.tagName('body')).getText();
+    assert(!bodyText.includes('Polish (Poland)'));
+    assert(bodyText.includes('en_US English (United States)'));
+  });
+
+  // Test 10
+  it('should filter locales by not in filter', async () => {
+    await driver.findElement(By.css('a[href="/admin/locales/"]')).click();
+
+    const criteriaCodeType = await driver.findElement(By.id('criteria_code_type'));
+    await criteriaCodeType.findElement(By.css('option[value="not_in"]')).click();
+
+    await driver.findElement(By.id('criteria_code_value')).sendKeys('pt_pt');
+
+    await driver.findElement(By.css('*[class^="ui blue labeled icon button"]')).click();
+
+    const bodyText = await driver.findElement(By.tagName('body')).getText();
+    assert(!bodyText.includes('Portuguese (Portugal)'));
+    assert(bodyText.includes('fr_FR French (France)'));
+  });
 });
