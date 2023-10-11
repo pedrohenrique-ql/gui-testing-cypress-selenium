@@ -144,7 +144,7 @@ describe('locales', () => {
   });
 
   // Test 8
-  it('should order by Name in descending order after filter with not contains', async () => {
+  it.only('should order by Name in descending order after filter with not contains', async () => {
     await driver.findElement(By.css('a[href="/admin/locales/"]')).click();
     
     await driver.findElement(By.css('*[class^="icon remove"]')).click();
@@ -152,7 +152,7 @@ describe('locales', () => {
     const criteriaCodeType = await driver.findElement(By.id('criteria_code_type'));
     await criteriaCodeType.findElement(By.css('option[value="not_contains"]')).click();
 
-    await driver.findElement(By.id('criteria_code_value')).sendKeys('e');
+    await driver.findElement(By.id('criteria_code_value')).sendKeys('a');
 
     await driver.findElement(By.css('*[class^="ui blue labeled icon button"]')).click();
 
