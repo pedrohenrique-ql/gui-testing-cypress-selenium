@@ -144,7 +144,7 @@ describe('locales', () => {
   });
 
   // Test 8
-  it.only('should order by Name in descending order after filter with not contains', async () => {
+  it('should order by Name in descending order after filter with not contains', async () => {
     await driver.findElement(By.css('a[href="/admin/locales/"]')).click();
     
     await driver.findElement(By.css('*[class^="icon remove"]')).click();
